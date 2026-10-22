@@ -97,56 +97,61 @@ def sombrear(celda, color):
     sh.set(qn("w:val"), "clear"); sh.set(qn("w:color"), "auto"); sh.set(qn("w:fill"), color); tcPr.append(sh)
 
 
-# 1) Hoja en blanco
-d = base()
-parrafo(d, "Punta del Este, ___ de __________ de 20__", color=GRIS)
-d.save(SALIDA / "Hoja membretada.docx")
+def main():
+    # 1) Hoja en blanco
+    d = base()
+    parrafo(d, "Punta del Este, ___ de __________ de 20__", color=GRIS)
+    d.save(SALIDA / "Hoja membretada.docx")
 
-# 2) Modelo de presupuesto
-d = base()
-p = parrafo(d, despues=2); run(p, "PRESUPUESTO", 9, DORADO_C, negrita=True, espaciado=60)
-p = parrafo(d, despues=14); run(p, "Nº 0000", 22, fuente=SERIF)
-p.add_run("\t"); run(p, "Punta del Este, ___ de __________ de 20__", 10, GRIS)
-p.paragraph_format.tab_stops.add_tab_stop(Cm(16), alignment=2)
+    # 2) Modelo de presupuesto
+    d = base()
+    p = parrafo(d, despues=2); run(p, "PRESUPUESTO", 9, DORADO_C, negrita=True, espaciado=60)
+    p = parrafo(d, despues=14); run(p, "Nº 0000", 22, fuente=SERIF)
+    p.add_run("\t"); run(p, "Punta del Este, ___ de __________ de 20__", 10, GRIS)
+    p.paragraph_format.tab_stops.add_tab_stop(Cm(16), alignment=2)
 
-datos = [("Cliente", "[Nombre o razón social]"), ("RUT / CI", "[Número]"),
-         ("Contacto", "[Teléfono · correo]"), ("Asunto", "[Trámite o servicio]")]
-t = d.add_table(rows=len(datos), cols=2)
-anchos(t, 3, 13)
-for (k, v), fila in zip(datos, t.rows):
-    run(fila.cells[0].paragraphs[0], k, 9, GRIS)
-    run(fila.cells[1].paragraphs[0], v, 10.5)
+    datos = [("Cliente", "[Nombre o razón social]"), ("RUT / CI", "[Número]"),
+             ("Contacto", "[Teléfono · correo]"), ("Asunto", "[Trámite o servicio]")]
+    t = d.add_table(rows=len(datos), cols=2)
+    anchos(t, 3, 13)
+    for (k, v), fila in zip(datos, t.rows):
+        run(fila.cells[0].paragraphs[0], k, 9, GRIS)
+        run(fila.cells[1].paragraphs[0], v, 10.5)
 
-parrafo(d, "De acuerdo a lo conversado, detallamos los honorarios por los servicios solicitados:", antes=16, despues=10)
+    parrafo(d, "De acuerdo a lo conversado, detallamos los honorarios por los servicios solicitados:", antes=16, despues=10)
 
-items = [("[Descripción del servicio]", ""), ("[Descripción del servicio]", ""), ("[Descripción del servicio]", "")]
-t = d.add_table(rows=1 + len(items) + 3, cols=2); t.alignment = WD_TABLE_ALIGNMENT.CENTER
-enc = t.rows[0].cells
-for c, txt, al in ((enc[0], "Concepto", None), (enc[1], "Importe", WD_ALIGN_PARAGRAPH.RIGHT)):
-    sombrear(c, TINTA); pp = c.paragraphs[0]; fmt(pp, 3, 3, al); run(pp, txt, 9, RGBColor(0xF4, 0xF1, 0xEA), negrita=True)
-for i, (concepto, imp) in enumerate(items, 1):
-    c0, c1 = t.rows[i].cells
-    fmt(c0.paragraphs[0], 4, 4); run(c0.paragraphs[0], concepto, 10.5)
-    fmt(c1.paragraphs[0], 4, 4, WD_ALIGN_PARAGRAPH.RIGHT); run(c1.paragraphs[0], "$ 0", 10.5)
-    borde(c0.paragraphs[0], color="DDD8CC", grosor=4); borde(c1.paragraphs[0], color="DDD8CC", grosor=4)
-for j, (txt, fuerte) in enumerate((("Subtotal", False), ("IVA 22 %", False), ("Total", True))):
-    c0, c1 = t.rows[1 + len(items) + j].cells
-    fmt(c0.paragraphs[0], 4, 2, WD_ALIGN_PARAGRAPH.RIGHT); fmt(c1.paragraphs[0], 4, 2, WD_ALIGN_PARAGRAPH.RIGHT)
-    run(c0.paragraphs[0], txt, 11 if fuerte else 10, negrita=fuerte, color=TINTA_C if fuerte else GRIS)
-    run(c1.paragraphs[0], "$ 0", 12 if fuerte else 10.5, negrita=fuerte)
-    if fuerte: sombrear(c0, "F4F1EA"); sombrear(c1, "F4F1EA")
-anchos(t, 12, 4)
+    items = [("[Descripción del servicio]", ""), ("[Descripción del servicio]", ""), ("[Descripción del servicio]", "")]
+    t = d.add_table(rows=1 + len(items) + 3, cols=2); t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    enc = t.rows[0].cells
+    for c, txt, al in ((enc[0], "Concepto", None), (enc[1], "Importe", WD_ALIGN_PARAGRAPH.RIGHT)):
+        sombrear(c, TINTA); pp = c.paragraphs[0]; fmt(pp, 3, 3, al); run(pp, txt, 9, RGBColor(0xF4, 0xF1, 0xEA), negrita=True)
+    for i, (concepto, imp) in enumerate(items, 1):
+        c0, c1 = t.rows[i].cells
+        fmt(c0.paragraphs[0], 4, 4); run(c0.paragraphs[0], concepto, 10.5)
+        fmt(c1.paragraphs[0], 4, 4, WD_ALIGN_PARAGRAPH.RIGHT); run(c1.paragraphs[0], "$ 0", 10.5)
+        borde(c0.paragraphs[0], color="DDD8CC", grosor=4); borde(c1.paragraphs[0], color="DDD8CC", grosor=4)
+    for j, (txt, fuerte) in enumerate((("Subtotal", False), ("IVA 22 %", False), ("Total", True))):
+        c0, c1 = t.rows[1 + len(items) + j].cells
+        fmt(c0.paragraphs[0], 4, 2, WD_ALIGN_PARAGRAPH.RIGHT); fmt(c1.paragraphs[0], 4, 2, WD_ALIGN_PARAGRAPH.RIGHT)
+        run(c0.paragraphs[0], txt, 11 if fuerte else 10, negrita=fuerte, color=TINTA_C if fuerte else GRIS)
+        run(c1.paragraphs[0], "$ 0", 12 if fuerte else 10.5, negrita=fuerte)
+        if fuerte: sombrear(c0, "F4F1EA"); sombrear(c1, "F4F1EA")
+    anchos(t, 12, 4)
 
-p = parrafo(d, antes=18, despues=4); run(p, "CONDICIONES", 9, DORADO_C, negrita=True, espaciado=60)
-for c in ("Validez de la propuesta: 15 días desde la fecha de emisión.",
-          "Forma de pago: [50 % al inicio y 50 % al finalizar / contado / mensual].",
-          "No incluye: tributos, timbres, tasas registrales ni gastos de terceros, que se liquidan aparte según comprobante.",
-          "Moneda: [pesos uruguayos / dólares estadounidenses]."):
-    p = d.add_paragraph(style="List Bullet"); fmt(p, despues=2); run(p, c, 10)
+    p = parrafo(d, antes=18, despues=4); run(p, "CONDICIONES", 9, DORADO_C, negrita=True, espaciado=60)
+    for c in ("Validez de la propuesta: 15 días desde la fecha de emisión.",
+              "Forma de pago: [50 % al inicio y 50 % al finalizar / contado / mensual].",
+              "No incluye: tributos, timbres, tasas registrales ni gastos de terceros, que se liquidan aparte según comprobante.",
+              "Moneda: [pesos uruguayos / dólares estadounidenses]."):
+        p = d.add_paragraph(style="List Bullet"); fmt(p, despues=2); run(p, c, 10)
 
-parrafo(d, "Quedamos a su disposición para cualquier consulta.", antes=14, despues=36)
-p = parrafo(d, despues=0); run(p, "______________________________", 10, GRIS)
-p = parrafo(d, despues=0); run(p, "[Esc. Lorena Yasinsky / Cr. José Wasiluk]", 10.5, fuente=SERIF)
-p = parrafo(d); run(p, NOMBRE, 9, GRIS)
-d.save(SALIDA / "Presupuesto (modelo).docx")
-print("ok", SALIDA)
+    parrafo(d, "Quedamos a su disposición para cualquier consulta.", antes=14, despues=36)
+    p = parrafo(d, despues=0); run(p, "______________________________", 10, GRIS)
+    p = parrafo(d, despues=0); run(p, "[Esc. Lorena Yasinsky / Cr. José Wasiluk]", 10.5, fuente=SERIF)
+    p = parrafo(d); run(p, NOMBRE, 9, GRIS)
+    d.save(SALIDA / "Presupuesto (modelo).docx")
+    print("ok", SALIDA)
+
+
+if __name__ == "__main__":
+    main()
