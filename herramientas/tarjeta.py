@@ -22,7 +22,8 @@ def vcard(p):
         "END:VCARD", ""])
 
 
-qr = segno.make(URL, error="m").svg_inline(dark=f"#{TINTA}", light=None, scale=4, border=0)
+# Margen blanco de 4 módulos, negro puro y viewBox (omitsize) para que el CSS escale el QR entero sin recortarlo
+qr = segno.make(URL, error="m").svg_inline(dark="#000000", light="#FFFFFF", border=4, omitsize=True)
 
 personas_html = ""
 for p in PERSONAS:
@@ -77,8 +78,8 @@ h2 {{ font-family:"Instrument Serif",serif; font-weight:400; font-size:26px; mar
 .btn:hover {{ border-color:var(--dorado); }}
 .btn.principal {{ background:var(--dorado); border-color:var(--dorado); color:var(--tinta); }}
 .pie {{ border-top:1px solid var(--linea); margin-top:24px; padding-top:22px; display:flex; gap:18px; align-items:center; }}
-.pie .qr {{ background:var(--papel); padding:8px; border-radius:8px; flex:none; line-height:0; }}
-.pie .qr svg {{ width:76px; height:76px; }}
+.pie .qr {{ background:#fff; border-radius:8px; flex:none; line-height:0; overflow:hidden; }}
+.pie .qr svg {{ width:132px; height:132px; display:block; }}
 .pie p {{ font-size:13px; line-height:1.7; color:var(--suave); word-break:break-word; }}
 .pie a {{ color:var(--papel); text-decoration:none; }}
 </style>
