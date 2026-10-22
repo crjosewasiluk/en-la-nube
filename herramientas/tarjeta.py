@@ -1,5 +1,9 @@
-"""Genera tarjeta/index.html (tarjeta virtual) y un .vcf por persona."""
-import base64, html, pathlib, sys
+"""Genera tarjeta/index.html (tarjeta virtual) y un .vcf por persona.
+
+Los .vcf van en la misma carpeta que index.html: el botón \"Guardar contacto\" los enlaza
+como archivo real, que iPhone y los navegadores de WhatsApp abren mejor que un data: URI.
+"""
+import html, pathlib, sys
 import segno
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
@@ -29,7 +33,6 @@ personas_html = ""
 for p in PERSONAS:
     v = vcard(p)
     (SALIDA / f"{p['id']}.vcf").write_text(v, encoding="utf-8")
-    datauri = "data:text/vcard;charset=utf-8;base64," + base64.b64encode(v.encode()).decode()
     wa = "https://wa.me/" + p["tel_int"].lstrip("+")
     personas_html += f"""
     <article class="persona">
@@ -39,7 +42,7 @@ for p in PERSONAS:
       <div class="acciones">
         <a class="btn principal" href="{wa}" target="_blank" rel="noopener">WhatsApp · {e(p['tel'])}</a>
         <a class="btn" href="tel:{p['tel_int']}">Llamar</a>
-        <a class="btn" href="{datauri}" download="{p['id']}-wasiluk-yasinsky.vcf">Guardar contacto</a>
+        <a class="btn" href="{p['id']}.vcf" type="text/vcard">Guardar contacto</a>
       </div>
     </article>"""
 
