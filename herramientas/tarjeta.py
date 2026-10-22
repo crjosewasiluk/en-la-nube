@@ -105,3 +105,17 @@ h2 {{ font-family:"Instrument Serif",serif; font-weight:400; font-size:26px; mar
 """
 (SALIDA / "index.html").write_text(pagina, encoding="utf-8")
 print("ok", SALIDA)
+
+# Variante para compartir como PDF (sin subir nada a la web): los enlaces tel:, wa.me y
+# mailto: siguen funcionando dentro del PDF; un .vcf enlazado no, así que en su lugar va
+# un botón de correo y los .vcf viajan adjuntos dentro del PDF.
+pdf_html = pagina.replace("</style>", """@page { margin:0; }
+body { min-height:0; padding:0; display:block; }
+.tarjeta { border-radius:0; border:0; box-shadow:none; max-width:none; width:440px; }
+</style>""")
+for p in PERSONAS:
+    asunto = f"Consulta para {p['titulo']} {p['nombre']} {p['apellido']}".replace(" ", "%20")
+    pdf_html = pdf_html.replace(
+        f'<a class="btn" href="{p["id"]}.vcf" type="text/vcard">Guardar contacto</a>',
+        f'<a class="btn" href="mailto:{CORREO}?subject={asunto}">Correo</a>')
+(SALIDA / "_pdf.html").write_text(pdf_html, encoding="utf-8")
