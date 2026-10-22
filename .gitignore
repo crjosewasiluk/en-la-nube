@@ -1,3 +1,4 @@
 # Presupuestos a clientes: datos de terceros, no se suben al repositorio
 presupuestos/
 __pycache__/
+*.zip
